@@ -1,0 +1,5 @@
+{% if collection.image %}
+	{{ collection.image.src | collection_img_url: 'original' | img_tag: collection_title | link_to: collection.url }}
+{% else %}
+	{{ collection.products.first.featured_image | product_img_url: 'grande' | img_tag: collection_title }}
+{% endif %}

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  
+  <meta charset="utf-8" />
+  
+  <!-- Basic Page Needs
+================================================== -->
+  
+  {% if template == 'index' %}
+    <title>{{ shop.name }} | {{ shop.description }}</title>
+  {% elsif template == '404' %}
+    <title>Page Not Found | {{ shop.name }}</title>
+  {% else %}
+    <title>{{ page_title }} | {{ shop.name }}</title>
+  {% endif %}
+
+  {% assign maxmeta = 155 %}
+
+  {% if template contains 'product' %}
+    <meta name="description" content="{{ product.description | strip_html | strip_newlines | truncate: maxmeta | escape }}" />
+  {% elsif template contains 'page' %}
+    <meta name="description" content="{{ page.content | strip_html | strip_newlines | truncate: maxmeta | escape }}" />
+  {% elsif template == 'index' and shop.description != '' %}
+    <meta name="description" content="{{ shop.description | strip_html | strip_newlines | truncate: maxmeta | escape}}" />
+  {% endif %}
+
+  <link rel="canonical" href="{{ canonical_url }}" />
+  
+  <!-- CSS
+================================================== -->
+  
+  <link href='//fonts.googleapis.com/css?family=Questrial|Glegoo|Droid+Sans|Lato:300,400|Arvo|Playfair+Display|Cutive+Mono|PT+Sans|Poiret+One|PT+Sans+Narrow|Quicksand|Noto+Serif|Lobster|Julius+Sans+One|Lobster+Two|Noticia+Text|Open+Sans|Open+Sans+Condensed:300|Oswald|Oxygen|Playball|Raleway|Roboto+Slab' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Muli:300,400' rel='stylesheet' type='text/css'>
+
+  {{ 'stylesheet.css' | asset_url | stylesheet_tag }}
+  {{ 'flexslider.css' | asset_url | stylesheet_tag }}
+  {{ 'queries.css' | asset_url | stylesheet_tag }}
+  {{ 'jquery.fancybox.css' | asset_url | stylesheet_tag }}
+  
+  <!-- JS
+================================================== -->
+  
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  {{ 'theme.js' | asset_url | script_tag }}
+  {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+  {{ 'jquery.flexslider.js' | asset_url | script_tag }}
+  {{ 'select.js' | asset_url | script_tag }}
+  {{ 'jquery.fancybox.pack.js' | asset_url | script_tag }}
+  {{ 'jquery.mousewheel-3.0.6.pack.js' | asset_url | script_tag }}
+  {{ 'jquery.easing.1.3.js' | asset_url | script_tag }}
+  {{ 'jquery.placeholder.js' | asset_url | script_tag }}
+  
+  {% if template contains 'product' %}
+    {% comment %} replaced jquery.elevateZoom.js in favor zoom.js... {% endcomment %}
+    {{ 'jquery.zoom.js' | asset_url | script_tag }}
+  {% endif %}
+  
+  {% if template == 'index' %}
+  {{ 'jquery.instagram.js' | asset_url | script_tag }}
+  {% endif %}
+
+  {% if template == 'page.instagram' %}
+  {{ 'jquery.instagram.js' | asset_url | script_tag }}
+  {% endif %}
+  
+  <!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <!-- Favicons
+================================================== -->
+  
+  <link rel="shortcut icon" href="{{ 'favicon.png' | asset_url }}">
+  
+  {% if template contains 'customers' %}
+  {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+  {{ "customer_area.js"  | shopify_asset_url | script_tag }}
+  {% endif %}
+  
+  {{ content_for_header }}
+  
+</head>
+
+<body class="gridlock">
+  <div id="wrapper" class="container">
+    
+    <div id="top-row" class="row">
+      
+      <!-- Start top Row -->	
+
+      <ul id="cart" class="desktop-12 tablet-9 mobile-3">
+        {% if shop.customer_accounts_enabled %}
+        <li>
+          {% if customer  %}
+          <a href="/account">{{ 'layout.customer.my_account' | t }}</a> {{ 'layout.customer.log_out' | t | customer_logout_link }}
+          {% else %}
+          {{ 'layout.customer.log_in' | t | customer_login_link }}  |  {{ 'layout.customer.create_account' | t | customer_register_link }}
+          {% endif %}
+        </li>
+        {% endif %}
+        <li class="cart-count">
+          <a href="/cart">{{ 'layout.cart.my_cart' | t }} ({{ cart.item_count }})</a>
+        </li>
+        <!-- li for search from was here -->
+      </ul>
+    </div>
+    
+    <!-- End Top Row -->
+
+      <div id="header" class="row">
+
+      <div id="logo" class="desktop-2 tablet-6 mobile-2">
+      
+          {% if settings.use_logo_image %}
+          <a href="/"><img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" style="border: 0;"/></a>
+          {% else %}
+          <h1>
+            <a href="/">{{ shop.name }}</a>
+          </h1>
+          {% endif %}
+      </div> 
+      
+
+        <div class="top-search mobile-3">
+          <form action="/search" method="get">
+            <input class="tablet-6 mobile-3" type="text" name="q" id="q" placeholder="{{ 'general.search.placeholder' | t }}" />
+          </form>
+        </div>
+     
+
+        <div class="message"><p><strong>Free shipping on US<br>orders $75 or more!</strong></p></div> 
+
+
+      <div id="navigation" class="desktop-10 omega tablet-6 mobile-3">
+        <nav class="primary">
+          <ul id="nav">
+            {% for link in linklists.main-menu.links %}
+            <li class="nav_title{% cycle '', '', '', '', '', '', '', ' last' %}">{{ link.title | link_to: link.url }}
+              {% capture child_list_handle %}{{ link.title | handleize }}{% endcapture %}
+              {% if linklists[child_list_handle] and linklists[child_list_handle].links.size > 0  %} <!-- and link.title == 'Accessories' -->
+              <!-- <span class="down">&#8595;</span> <!-- down arrow, but doesn't look good-->
+              <ul class="nav_sub_title">
+                {% for l in linklists[child_list_handle].links %}
+                <li><a class="sub" href="{{ l.url }}">{{ l.title }}</a></li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      </div>
+      
+      <script type="text/javascript">
+        $(document).ready(function() {
+          
+          //build dropdown
+          $("<select />").appendTo("#navigation ul#nav");
+          
+          // Create default option "Go to..."
+          $("<option />", {
+            "selected": "selected",
+            "value"   : "",
+            "text"    : "Go to..."
+          }).appendTo("ul#nav select");	
+          
+          // Populate dropdowns with the first menu items
+          $("ul#nav li.nav_title").each(function() {
+            var el = $(this);
+            if(el.is('.nav_title')){
+              $("<option />", {
+                "value"   : el.attr("href"),
+                "text"    : el.text()
+              }).appendTo("ul#nav select");
+            }
+          });
+          
+          //make responsive dropdown menu actually work			
+          $("ul#nav select").change(function() {
+            window.location = $(this).find("option:selected").val();
+          });
+          
+        });	
+      </script>          
+    </div>
+    
+    <!-- End Header -->
+    
+    <div id="content" class="row">
+      
+      <div id="nav-border" class="desktop-12 tablet-6 mobile-3"></div>
+      
+      <!-- Hide Breadcrumbs from homepage -->
+      {% if template != "index" %}
+        {% if settings.breadcrumb %}
+          {% include 'breadcrumb' %}	
+        {% endif %}
+      {% endif %}
+      
+
+      {{ content_for_layout }}
+      
+    </div>
+    
+    <!-- End Content -->
+  {% if template != 'page.tumblr' %}
+    <div id="footer" class="row">
+      <div id="footer-border" class="desktop-12 tablet-6 mobile-3">
+      </div>
+      
+      <ul class="desktop-3 mobile-3">
+        <h4>{{ settings.footer-1-title }}</h4>
+        {% for link in linklists[settings.footer-1].links %}
+          <li>{{ link.title | link_to: link.url }}</li>
+        {% endfor %}
+      </ul>
+      <ul class="desktop-3 mobile-3">
+        <h4>{{ settings.footer-2-title }}</h4>
+        {% for link in linklists[settings.footer-2].links %}
+          <li>{{ link.title | link_to: link.url }}</li>
+        {% endfor %}
+      </ul>
+      <ul class="desktop-3 mobile-3">
+        <h4>{{ settings.footer-3-title }}</h4>
+        {% for link in linklists[settings.footer-3].links %}
+          <li>{{ link.title | link_to: link.url }}</li>
+        {% endfor %}
+      </ul>
+      <ul class="desktop-3 mobile-3">
+        <h4>{% if settings-footer-4-title == blank %}{{ 'layout.footer.social_and_email_title' | t }}{% else %}{{ settings.footer-4-title }}{% endif %}</h4>
+        <li>{% include 'mailing' %}
+          <li class="icons">
+            {% if settings.show_facebook %}<a href="{{ settings.facebook_url }}" target="_blank" title="facebook"><img src="{{ 'Facebook.png' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_twitter %}<a href="http://www.twitter.com/{{ settings.twittername }}" target="_blank" title="twitter"><img src="{{ 'Twitter.png' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_pinterest %} <a href="{{ settings.pinterest_url }}" target="_blank" title="pinterest"><img src="{{ 'Pinterest.png' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_tumblr %} <a href="{{ settings.tumblr_url }}" target="_blank" title="tumblr"><img src="{{ 'Tumblr.png' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_instagram %} <a href="{{ settings.instagram_url }}" target="_blank" title="instagram"><img src="{{ 'Instagram.png' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_youtube %} <a href="{{ settings.youtube_url }}" target="_blank" title="you tube"><img src="{{ 'YouTube.jpg' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_googleplus %} <a href="{{ settings.googleplus_url }}" target="_blank" title="google +"><img src="{{ 'GooglePlus.jpg' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_vimeo %} <a href="{{ settings.vimeo_url }}" target="_blank" title="vimeo"><img src="{{ 'Vimeo.jpg' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_rss %} <a href="{{ shop.url }}/blogs/{{ settings.homepage-blog }}.atom" target="_blank" title="rss"><img src="{{ 'Rss.jpg' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_blogger %} <a href="{{ settings.blogger_url }}" target="_blank" title="blogger"><img src="{{ 'Blogger.jpg' | asset_url }}" width="32px"></a>{% endif %}
+            {% if settings.show_wordpress %} <a href="{{ settings.wordpress_url }}" target="_blank" title="wordpress"><img src="{{ 'Wordpress.jpg' | asset_url }}" width="32px"></a>{% endif %}
+        </li>
+      </ul>
+      
+    </div>
+  {% endif %}
+    
+  </div>
+  
+  <!-- Begin Recently Viewed Products -->
+  <script type="text/javascript" charset="utf-8">
+    //<![CDATA[
+    
+    // Including jQuery conditionnally.
+    if (typeof jQuery === 'undefined') {
+      document.write({{ "//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" | script_tag | json }});
+      document.write('<script type="text/javascript">jQuery.noConflict();<\/script>');
+    }
+    
+    // Including api.jquery.js conditionnally.
+    if (typeof Shopify.resizeImage === 'undefined') {
+      document.write({{ "api.jquery.js" | shopify_asset_url | script_tag | json }});
+    }
+    
+    //]]>
+  </script>
+  
+  {{ '//ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js' | script_tag }}
+  {{ 'jquery.products.min.js' | asset_url | script_tag }}
+  
+  {% if template contains 'product' %}
+  
+  <script type="text/javascript" charset="utf-8">
+    //<![CDATA[
+    
+    Shopify.Products.recordRecentlyViewed();
+    
+    //]]>
+    
+    $('input, textarea').placeholder();
+    
+  </script>
+  
+  {% endif %}
+  
+  <!-- End Recently Viewed Products -->
+  
+     {% include 'ajaxify-cart' %}
+
+</body>
+</html>

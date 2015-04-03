@@ -1,0 +1,15 @@
+<div id="page" class="desktop-12 tablet-6 mobile-3">
+  <div class="desktop-5 tablet-3 mobile-3">
+  	<h1>{{ page.title }}</h1>
+  	{% include 'contact' %}
+  </div>	
+	<div class="desktop-7 tablet-3 mobile-3">
+    {% if settings.use_contact_page_image %}
+          <a href="/"><img src="{{ 'contact_page.png' | asset_url | master }}" alt="{{ shop.name }}" style="border: 0;"/></a>
+          {% endif %}
+
+	</div>
+
+
+
+</div>

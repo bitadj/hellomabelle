@@ -1,0 +1,33 @@
+{% paginate collection.products by 30 %}
+
+<div id='bita-div'>
+	<div id="sidebar" class="desktop-2 mobile-3 fullheight">
+  {% include 'sidebar' %}
+	</div>
+
+	<div class="desktop-10 mobile-3 featured "> {% include 'featured' %} </div>
+	<div class="mobile-title mobile-3"> <h1>{{ collection.title | upcase }}</h1></div>
+		<ul id="product-loop" class="desktop-10 mobile-3">
+		<div class="desktop-12 tablet-6 mobile-3">
+		  {% for product in collection.products %}
+			  <li class="product desktop-4 mobile-3{% cycle ' first', '', '' %}" data-alpha="{{ product.title }}" data-price="{{ product.price }}">   
+			    {% include 'product-listing' %}
+			  </li>
+		  {% endfor %}
+		</div>
+		</ul>
+	</div>
+
+{% include 'pagination' %}
+
+{% endpaginate %}
+
+<script>
+
+	url = window.location.pathname;
+	var col = '{{ collection.url }}'
+	if(url != col){
+		jQuery('div.featured').remove();
+	};
+
+</script>

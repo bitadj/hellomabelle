@@ -1,0 +1,74 @@
+$(document).ready(function() {  
+
+  
+  //build dropdown
+  $("<select />").appendTo("#navigation nav");
+  
+  // Create default option "Go to..."
+  $("<option />", {
+    "selected": "selected",
+    "value"   : "",
+    "text"    : "Shop..."
+  }).appendTo("nav select");	
+  
+  // Populate dropdowns with the first menu items
+  $("ul#nav li a").each(function() {
+    var el = $(this);
+    $("<option />", {
+      "value"   : el.attr("href"),
+      "text"    : el.text()
+    }).appendTo("nav select");
+  });
+  
+  //make responsive dropdown menu actually work			
+  $("nav select").change(function() {
+    window.location = $(this).find("option:selected").val();
+  });
+  
+  $(".fancybox").fancybox();
+  
+  $('.flexslider').flexslider({
+    animation: "slide",
+    controlNav: true,
+    slideshowSpeed: {{ settings.slideshow-speed }},
+                              directionNav: true
+                              });
+  
+  $('.coll-filter').customSelect();
+  
+  {% if settings.info-hover %}
+  $('.product').hover(function(){ $(this).children('#product-info').show(); }, function(){ $(this).children('#product-info').hide(); })
+  {% endif %}
+  
+  //<![CDATA[
+  jQuery(function() {
+    jQuery('#sidebar ul li a').each(function() {
+      if (jQuery(this).attr('href')  ===  window.location.pathname) {
+        jQuery(this).addClass('current');
+      }
+    });
+  });  
+   //]]>
+  jQuery(".featured img").each(function() {
+    jQuery(this).addClass("bita")
+
+  });
+
+
+  // tumblr page
+  console.log($('.tumblr').height())
+  console.log($('#footer').height())
+  console.log($('#header').height())
+  console.log($(document).height())
+  var doc_height = $(document).height();
+  var head_height = $('#header').height();
+  var foot_height = $('#footer').height();
+  var tumblr_height = doc_height - (head_height) + 10;
+  $('.tumblr').height(tumblr_height);
+  console.log(tumblr_height);
+
+
+
+  }); 
+   
+   

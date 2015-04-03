@@ -1,0 +1,48 @@
+{% assign image_size = 'medium' %}
+{% assign heading = 'Related' %}
+ 
+{% if product.metafields.recommendations.productHandles %}
+ {{ product.metafields.recommendations.productHandles }}
+<h3>{{ heading | upcase }}</h3>
+
+<ul class="related-products">
+	{% if product.metafields.recommendations.productHandles %}
+		{% assign recc = product.metafields.recommendations.productHandles | split: ', ' %}
+		{% assign title_string_array = product.title | split: ' - ' %}
+		{% for handle in recc %}
+			{% capture prod_link %}
+				/products/{{ handle }}.js
+			{% endcapture %}
+			<li>
+				<div class="image desktop-12">
+					<a href="{{ prod_link }}"> {{ prod_link }} 
+						
+					</a>
+				</div>
+			</li>
+		{% endfor %}
+	{% endif %}
+</ul>
+ 
+{% endif %}
+ 
+<script>!window.jQuery</script>
+{{ 'api.jquery.js' | shopify_asset_url | script_tag }}
+ 
+<script type="text/javascript" charset="utf-8">
+//<![CDATA[
+  var recommendations = [];
+  {% if product.metafields.recommendations.productHandles %}
+  recommendations = jQuery.trim({{ product.metafields.recommendations.productHandles | json }}).split(/[\s,;]+/);
+  {% endif %}
+  if (recommendations.length && recommendations[0] !== '') {
+    var list = jQuery('ul.related-products');
+    var prod_title
+    for (var i=0; i<3; i++) {
+      jQuery.getJSON('/products/' + recommendations[i] + '.js', function(product) {
+        list.append('<li><div class="image desktop-12"><a href="' + product.url +'"><img src="' + product.images[0].replace(/(\.jpg|\.png|\.jpeg|\.gif)/, '_{{ image_size }}$1') + '" /></a></div><h2><a href="' + product.url + '">' + product.title.split(" - ")[0].toUpperCase() + '</a></h2></li>');
+      });
+    }
+  }  
+//]]>
+</script>

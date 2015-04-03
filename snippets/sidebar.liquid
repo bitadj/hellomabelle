@@ -1,0 +1,188 @@
+{% for setting in settings %}
+  {% assign arr = setting | split: '=>' %}
+  {% if arr.first contains 'collection-linklist-' %}
+    {% capture num_links %}{% increment variable %}{% endcapture %}
+  {% endif %}
+
+{% endfor %}
+
+{% for i in (1..num_links) %}
+
+  {% assign link_is_present = 'collection-links-' | append: forloop.index %}
+  
+  {% if settings.[link_is_present] %}
+    {% assign link_title =  'collection-linklist-' | append: forloop.index | append: '-title' %}
+    {% assign link = settings.[link_title] | handelize %}
+
+    <ul>
+      {% if settings.[link_title] == 'Shop All' %}
+        <h4>{{ settings.[link_title] |link_to: '/collections' }}</h4>
+      {% elsif settings.[link_title] == 'New Arrivals' %}
+        <h4>{{ settings.[link_title] | link_to: '/collections/new' }}</h4>
+      {% else %}
+        <h4>{{ settings.[link_title] | link_to: collections[link].url }}</h4>
+        {% if  collections[link].handle ==  collection.handle %}
+          {% for type in collections[link].all_types %}
+            <li>{{ type | link_to_type }}</li>
+          {% endfor %}
+        {% endif %}
+        {% for type in collections[link].all_types %}
+          {% if type == collection.current_type %}
+            {% for type in collections[link].all_types %}
+              <li>{{ type | link_to_type }}</li>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </ul>
+  {% endif %}
+{% endfor %}
+
+<!-- Start Filtering -->
+{% if settings.filters %} 
+  <div id="side-filter">
+  {% include 'dropdown-filter' %}
+  </div>
+{% endif %}
+
+
+<!-- Bita dry-ed up this code like a rockstar! -->
+<!--  <ul>
+    {% for link in linklists.main-menu.links %}
+      {% if link.title == 'New Arrivals' %}
+          <h4>{{ link.title | link_to: link.url }}</h4>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <ul>
+    <h4>{{ settings.collection-linklist-1-title | link_to: collections[settings.collection-linklist-1-title].url }}</h4>
+    {% for link in linklists.[settings.collection-side-1].links %}
+        <li>{{ link.title | link_to: link.url }}</li>
+    {% endfor %}
+  </ul>
+
+  {% if settings.collection-links-2 %}
+  <ul>
+    <h4>{{ settings.collection-linklist-2-title | link_to: collections[settings.collection-linklist-2-title].url }}</h4>
+    {% for link in linklists.[settings.collection-side-2].links %}
+        <li>{{ link.title | link_to: link.url }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if settings.collection-links-3 %}
+  <ul>
+    <h4>{{ settings.collection-linklist-3-title | link_to: collections[settings.collection-linklist-3-title].url }}</h4>
+    {% for link in linklists.[settings.collection-side-3].links %}
+        <li>{{ link.title | link_to: link.url }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if settings.collection-links-4 %}
+  <ul>
+    <h4>{{ settings.collection-linklist-4-title | link_to: collections[settings.collection-linklist-4-title].url }}</h4>
+    {% for link in linklists.[settings.collection-side-4].links %}
+        <li>{{ link.title | link_to: link.url }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if settings.collection-links-5 %}
+    <ul>
+      <h4>{{ settings.collection-linklist-5-title | link_to: collections[settings.collection-linklist-5-title].url }}</h4>
+      {% for link in linklists.[settings.collection-side-5].links %}
+          <li>{{ link.title | link_to: link.url }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if settings.collection-links-6 %}
+    <ul>
+      <h4>{{ settings.collection-linklist-6-title | link_to: collections[settings.collection-linklist-6-title].url }}</h4>
+      {% for link in linklists.[settings.collection-side-6].links %}
+          <!--<li>{{ link.title | link_to: link.url }}</li>
+      {% endfor %}
+      <!-- collection.all_types 
+      {% assign col = settings.collection-linklist-6-title | downcase %}
+        {% for product_type in collections[col].all_types %}
+          <li class="sidebar_{{ col }}" style="display: none;">{{ product_type | link_to_type }}</li>
+        {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if settings.collection-links-7 %}
+    <ul>
+      <h4>{{ settings.collection-linklist-7-title | link_to: collections[settings.collection-linklist-7-title].url }}</h4>
+      {% for link in linklists.[settings.collection-side-7].links %}
+          <!--<li>{{ link.title | link_to: link.url }}</li>
+      {% endfor %}
+      <!-- collection.all_types 
+      {% assign col = settings.collection-linklist-7-title | downcase %}
+        {% for product_type in collections[col].all_types %}
+          <li class="sidebar_{{ col }}" style="display: none;">{{ product_type | link_to_type }}</li>
+        {% endfor %}
+      
+    </ul>
+  {% endif %} -->
+
+ <script>
+  //   $(document).ready(function() {
+  //   var path = "";
+  //   url = window.location.pathname;
+  //   // arr = url.split('/');
+  //   // for (i = 1; i < arr.length-1; i++){ 
+  //   //   path += '/';
+  //   //   path += arr[i];
+  //   // };
+
+  //   full_url = window.location.href;
+  //   array = full_url.split(window.location.pathname);
+  //   last = array.pop();
+  //   path = window.location.pathname + last
+
+  //   $('#sidebar ul').each(function() {
+      
+  //     $(jQuery(this).children().each(function(){
+  //         collect = $(this).children()[0].pathname
+  //         li_href = $(this).children()[0].pathname + $(this).children()[0].search
+
+  //         // $($(this)[0].parentNode).children("li").hide();
+  //         // if ( li_href === path ) {
+  //           if (window.location.pathname == "/collections/types") {
+  //             console.log('window path: ' + window.location.pathname)
+  //             $('.sidebar_{{ col }}').css("display", "")
+  //             // $($(this)[0].parentNode).children("li").show();
+  //           } else if ( url.split('/')[2] === '{{ col }}' ) {
+  //           // console.log('{{ col }}')
+  //           // console.log('url split: ' + url.split('/')[2]);
+  //           console.log("li_href: " + li_href)
+  //           console.log("path: " + path)
+  //           //do nothing
+  //           console.log($($(this)[0].parentNode).children("li"))
+  //           $($(this)[0].parentNode).children("li").show();
+  //           // console.log($($(this)[0].parentNode).children("li"));
+  //         } else if (url === collect) {
+  //           // console.log('{{ col }}')
+  //           console.log('url split: ' + url.split('/')[2]);
+  //           console.log('collect: ' + collect)
+  //           // $($(this)[0].parentNode).children("li").show()
+          
+  //         } else {
+  //           // $($(this)[0].parentNode).children("li").hide();
+            
+  //         }
+
+  //       }) 
+  //     );
+  //   })
+
+  //   // jQuery('#sidebar ul').each(function() { 
+  //   //       if ($(jQuery(this).children()[0].firstChild).attr('href') === url ||
+  //   //           $(jQuery(this).children()[0].firstChild).attr('href') === path
+  //   //           ){
+  //   //       //do nothing
+  //   //     } else {
+  //   //       jQuery(this).children("li").hide();
+  //   //     };   
+  //   //   });
+  //   });
+  // </script>
